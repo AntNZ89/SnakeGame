@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -11,15 +15,23 @@ public class SnakeGame extends JFrame {
     private JButton bUP = new JButton();
     private JButton bRIGHT = new JButton();
     int[][] GameField = create2dArray();
-    int head1 = 1;
-    int head2 = 0;
+    int head1 = 0;
+    int head2 = 1;
     int tail1 = 0;
     int tail2 = 0;
-    int temp;
+    int foodR = 5;
+    int foodC = 5;
+    int count = 0;
+    int temp1 = 0;
+    int temp2 = 0;
+
+
+    LinkedList<String> stringList = new LinkedList<>();
 
 
 
 
+    private JButton bCLEAR = new JButton();
     // end attributes
 
     public SnakeGame() {
@@ -79,6 +91,16 @@ public class SnakeGame extends JFrame {
             }
         });
         cp.add(bRIGHT);
+        bCLEAR.setBounds(176, 56, 80, 24);
+        bCLEAR.setFont(new Font("Dialog", Font.BOLD, 11));
+        bCLEAR.setText("CLEAR");
+        bCLEAR.setMargin(new Insets(2, 2, 2, 2));
+        bCLEAR.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                bCLEAR_ActionPerformed(evt);
+            }
+        });
+        cp.add(bCLEAR);
         // end components
 
         setVisible(true);
@@ -94,7 +116,7 @@ public class SnakeGame extends JFrame {
         // TODO add your code here
 
 
-        if (head2 > 0) {
+        if (head2 > 0 && tail2 != head2-1) {
 
             GameField[tail1][tail2] = 0;
             GameField[head1][head2] = 0;
@@ -120,7 +142,7 @@ public class SnakeGame extends JFrame {
         // TODO add your code here
 
 
-        if (head1 < GameField.length-1) {
+        if (head1 < GameField.length-1 && tail1 != head1+1) {
 
             GameField[tail1][tail2] = 0;
             GameField[head1][head2] = 0;
@@ -146,24 +168,105 @@ public class SnakeGame extends JFrame {
         // TODO add your code here
 
 
-        if (head1 > 0) {
 
-            GameField[tail1][tail2] = 0;
-            GameField[head1][head2] = 0;
 
-            tail2 = head2;
-            tail1 = head1;
-            head1--;
+        if (head1 > 0 && tail1 != head1-1) {
 
-            GameField[tail1][tail2] = 1;
-            GameField[head1][head2] = 1;
+            if (count == 0){
+
+                GameField[tail1][tail2] = 0;
+                GameField[head1][head2] = 0;
+
+                tail2 = head2;
+                tail1 = head1;
+                head1--;
+
+                GameField[tail1][tail2] = 1;
+                GameField[head1][head2] = 1;
+
+            }
+            else {
+
+                stringList.add("UP");
+
+                GameField[tail1][tail2] = 0;
+                GameField[head1][head2] = 0;
+
+                temp1 = tail1;
+                temp2 = tail2;
+
+                tail2 = head2;
+                tail1 = head1;
+                head1--;
+
+
+                GameField[tail1][tail2] = 1;
+                GameField[head1][head2] = 1;
+
+
+                if (stringList.isEmpty()){
+                    System.out.println("CAN'T DO THAT");
+                }
+                else if(Objects.equals(stringList.get(0), "RIGHT")){
+
+                    tail2 = temp2 + 1;
+
+                    GameField[tail1][tail2] = 1;
+
+                    stringList.removeFirst();
+                }
+                else if (Objects.equals(stringList.get(0), "UP")){
+
+
+
+                    tail1 = temp1 -1;
+
+
+
+                    GameField[tail1][tail2] = 1;
+
+
+
+                    stringList.removeFirst();
+
+
+                }
+
+
+            }
+
+
+
+
 
         } // end of if
 
+        if (GameField[foodR][foodC] == GameField[head1][head2]){
+
+            tail1++;
+            foodC = 0;
+            foodR = 0;
+
+            GameField[tail1][tail2] = 1;
+
+
+
+            count++;
+
+            for (int c = 0 ; c < 2 ; c++){
+
+                stringList.add("UP");
+
+
+            }
+
+
+        }
 
 
 
         print2dArray(GameField);
+        System.out.println(tail1);
 
     } // end of bUP_ActionPerformed
 
@@ -173,21 +276,103 @@ public class SnakeGame extends JFrame {
 
 
 
-        if (head2 < GameField[0].length-1) {
+        if (head2 < GameField[0].length-1 && tail2 != head2+1) {
 
-            GameField[tail1][tail2] = 0;
-            GameField[head1][head2] = 0;
+            if (count == 0){
 
-            tail2 = head2;
-            tail1 = head1;
-            head2++;
+                GameField[tail1][tail2] = 0;
+                GameField[head1][head2] = 0;
 
-            GameField[tail1][tail2] = 1;
-            GameField[head1][head2] = 1;
+                tail2 = head2;
+                tail1 = head1;
+                head2++;
+
+                GameField[tail1][tail2] = 1;
+                GameField[head1][head2] = 1;
+
+            }
+            else {
+
+                stringList.add("RIGHT");
+
+                if (!stringList.isEmpty()){
+                    GameField[tail1][tail2] = 0;
+                    GameField[head1][head2] = 0;
+
+                    temp1 = tail1;
+                    temp2 = tail2;
+
+                    tail2 = head2;
+                    tail1 = head1;
+                    head2++;
+
+                    GameField[tail1][tail2] = 1;
+                    GameField[head1][head2] = 1;
+
+
+
+                }
+
+                if (stringList.isEmpty()){
+                    System.out.println("CAN'T DO THAT");
+                }
+                else if(Objects.equals(stringList.get(0), "RIGHT")){
+
+
+                    tail2 = temp2 + 1;
+
+                    GameField[tail1][tail2] = 1;
+
+                    stringList.removeFirst();
+
+
+
+
+
+
+
+
+                }
+
+
+
+            }
+
+
+
+
 
         } // end of if
 
 
+
+
+
+        if (GameField[foodR][foodC] == GameField[head1][head2]){
+
+            tail2--;
+            foodC = 0;
+            foodR = 0;
+
+            GameField[tail1][tail2] = 1;
+
+
+
+            count++;
+
+            for (int c = 0 ; c < 2 ; c++){
+
+                stringList.add("RIGHT");
+
+
+            }
+
+
+        }
+
+
+
+        System.out.println(tail1);
         print2dArray(GameField);
     } // end of bRIGHT_ActionPerformed
 
@@ -238,6 +423,15 @@ public class SnakeGame extends JFrame {
     }
 
 
+
+    public void bCLEAR_ActionPerformed(ActionEvent evt) {
+        // TODO add your code here
+
+        GameField[tail1][tail2] = 1;
+        GameField[head1][head2] = 1;
+        print2dArray(GameField);
+
+    } // end of bCLEAR_ActionPerformed
 
     // end methods
 } // end of class SnakeGame
